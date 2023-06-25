@@ -130,10 +130,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbb3511d60480e64d9abdc61e6f9a1cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prevPosition: {x: 0, y: 0, z: 0}
   piece: {fileID: 8350659112388863472}
-  brickPrefab: {fileID: 3393139675133798468, guid: 09ce8958fff4efe4791ac1a40ff7721c, type: 3}
+  piecesList: []
+  groundPrefab: {fileID: 3393139675133798468, guid: 09ce8958fff4efe4791ac1a40ff7721c, type: 3}
   bubbleSpriteRenderer: {fileID: 8727331072676802163}
   bubbleCol: {fileID: 7394351925113722126}
+  dragOffset: {x: 0, y: 0.2, z: 0}
 --- !u!58 &7394351925113722126
 CircleCollider2D:
   m_ObjectHideFlags: 0

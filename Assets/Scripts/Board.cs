@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,49 +24,46 @@ public class Board : MonoBehaviour
 
     private void CreateGrid()
     {
-        grid = new GridBlock[boardSize.x, boardSize.y];
+        grid = new GridBlock[boardSize.y, boardSize.x];
         gridIndex = new Dictionary<Vector3, Vector2Int>();
         // Create Grid
         int i = 0;
-        for (int x = (-(boardSize.x / 2)); x < boardSize.x / 2; x++)
+        for (int x = (-(boardSize.y / 2)); x < boardSize.y / 2; x++, i++)
         {
             int j = 0;
-            for (int y = (-(boardSize.y / 2)); y < boardSize.y / 2; y++)
+            for (int y = (-(boardSize.x / 2)); y < boardSize.x / 2; y++, j++)
             {
-                Vector3 position = new Vector3(x + 0.5f, y + 0.5f, 0);
+                Vector3 position = new Vector3(y + 0.5f, x + 0.5f, 0);
                 GameObject gridBlock = Instantiate(gridPrefab, position, Quaternion.identity);
-                gridBlock.name = "Grid (" + x + ", " + y + ")";
+                gridBlock.name = "Grid (" + i + ", " + j + ")";
                 gridBlock.transform.parent = transform;
-                if (y == (-(boardSize.y / 2)))
+                if (x == (-(boardSize.y / 2)))
                 {
-                    StartCoroutine(delay(gridBlock.GetComponent<GridBlock>()));
+                    StartCoroutine(DelayInitializeGridBlock(gridBlock.GetComponent<GridBlock>()));
                 }
                 grid[i, j] = gridBlock.GetComponent<GridBlock>();
                 gridIndex.Add(position, new Vector2Int(i, j));
-                j++;
             }
-            i++;
         }
 
         // Create Border
         Instantiate(borderPrefab, Vector3.zero, Quaternion.identity, this.transform);
 
     }
-    private IEnumerator delay(GridBlock gb)
+    private IEnumerator DelayInitializeGridBlock(GridBlock gb)
     {
         yield return new WaitForSeconds(1f);
         gb.setStatus(GridBlockStatus.activeEmpty);
     }
-    public bool isValidMove(Vector3Int[] pieceCells, Vector3 piecePos, List<GameObject> piecesList)
+
+
+    public bool IsValidPosition(List<GameObject> piecesList)
     {
         try
         {
-
-            bool activeCheck = false;
-
+            bool isValid = false;
             for (int i = 0; i < piecesList.Count; i++)
             {
-                //Vector3 tilePosition = new Vector3((float)pieceCells[i].x + 0.5f, (float)pieceCells[i].y + 0.5f, (float)pieceCells[i].z);
                 Vector3 tilePosition = piecesList[i].transform.position;
                 Vector2Int index = gridIndex[tilePosition];
                 if (grid[index.x, index.y].status != GridBlockStatus.empty && grid[index.x, index.y].status != GridBlockStatus.activeEmpty)
@@ -74,36 +72,121 @@ public class Board : MonoBehaviour
                 }
                 if (grid[index.x, index.y].status == GridBlockStatus.activeEmpty)
                 {
-                    activeCheck = true;
+                    isValid = true;
                 }
             }
-            if (activeCheck)
-            {
-                for (int i = 0; i < piecesList.Count; i++)
-                {
-                    Vector3 tilePosition = piecesList[i].transform.position;
-                    tilePosition.y += 1f;
-                    Vector2Int index = gridIndex[tilePosition];
-                    grid[index.x, index.y].setStatus(GridBlockStatus.activeEmpty);
-                }
-                for (int i = 0; i < piecesList.Count; i++)
-                {
-                    Vector3 tilePosition = piecesList[i].transform.position;
-                    Vector2Int index = gridIndex[tilePosition];
-
-                    grid[index.x, index.y].setStatus(GridBlockStatus.brick);
-                }
-
-                return true;
-            }
-
-            else
-                return false;
+            return isValid;
         }
         catch (Exception e)
         {
             Debug.Log(e.Message);
             return false;
+        }
+    }
+    public bool IsValidMove(List<GameObject> piecesList)
+    {
+        bool isValid = IsValidPosition(piecesList);
+        try
+        {
+            if (isValid)
+            {
+                int preRowCount = CompletedRowCount();
+                // make the upper tile active for next block
+                Debug.Log("First Loop");
+                for (int i = 0; i < piecesList.Count; i++)
+                {
+                    Vector3 tilePosition = piecesList[i].transform.position;
+                    tilePosition.y += 1f;
+                    Vector2Int index = gridIndex[tilePosition];
+                    if (grid[index.x, index.y].status == GridBlockStatus.empty)
+                        grid[index.x, index.y].setStatus(GridBlockStatus.activeEmpty);
+                }
+
+                Debug.Log("Second Loop");
+                // placed the new piece sprites
+                for (int i = 0; i < piecesList.Count; i++)
+                {
+                    Vector3 tilePosition = piecesList[i].transform.position;
+                    Vector2Int index = gridIndex[tilePosition];
+
+                    grid[index.x, index.y].setStatus(GridBlockStatus.ground);
+                }
+
+                // update to new material if combo rows
+                int postRowCount = CompletedRowCount();
+                if (postRowCount - preRowCount > 0)
+                {
+                    TransformRows(postRowCount - preRowCount);
+                }
+
+            }
+            return isValid;
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.Message);
+            return false;
+        }
+    }
+
+    private int CompletedRowCount()
+    {
+        int count = 0;
+        for (int x = 0; x < boardSize.y; x++)
+        {
+            bool check = true;
+            for (int y = 0; y < boardSize.x; y++)
+            {
+                if (grid[x, y].status == GridBlockStatus.empty || grid[x, y].status == GridBlockStatus.activeEmpty)
+                {
+                    check = false;
+                    break;
+                }
+            }
+            if (check)
+                count++;
+        }
+        return count;
+    }
+    private void TransformRows(int rowsCount)
+    {
+        GridBlockStatus newRowMat = GridBlockStatus.empty;
+        if (rowsCount == 1)
+        {
+            newRowMat = GridBlockStatus.concrete;
+        }
+        else if (rowsCount == 2)
+        {
+            newRowMat = GridBlockStatus.bronze;
+        }
+        else if (rowsCount == 3)
+        {
+            newRowMat = GridBlockStatus.obsidian;
+        }
+        else if (rowsCount == 4)
+        {
+            newRowMat = GridBlockStatus.diamond;
+        }
+        else { return; }
+
+        for (int x = 0; x < boardSize.y; x++)
+        {
+            bool isRow = true;
+            for (int y = 0; y < boardSize.x; y++)
+            {
+                if (grid[x, y].status != GridBlockStatus.ground)
+                {
+                    isRow = false;
+                    break;
+                }
+            }
+            if (isRow)
+            {
+                for (int y = 0; y < boardSize.x; y++)
+                {
+                    grid[x, y].setStatus(newRowMat);
+                }
+            }
         }
     }
 }

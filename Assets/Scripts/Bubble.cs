@@ -10,7 +10,7 @@ public class Bubble : MonoBehaviour
     public Vector3 prevPosition;
     public GameObject piece;
     public List<GameObject> piecesList = new List<GameObject>();
-    public GameObject brickPrefab;
+    public GameObject groundPrefab;
 
     public SpriteRenderer bubbleSpriteRenderer;
     public Collider2D bubbleCol;
@@ -55,7 +55,7 @@ public class Bubble : MonoBehaviour
 
             //Vector3 pos = new Vector3((pieceCells[i].x * 0.2f) - alignmentX, (pieceCells[i].y * 0.2f) - alignmentX - alignmentY, 0f);
             Vector3 pos = new Vector3(pieceCells[i].x - alignmentX, pieceCells[i].y - alignmentX - alignmentY, 0f);
-            GameObject p = Instantiate(brickPrefab, piece.transform);
+            GameObject p = Instantiate(groundPrefab, piece.transform);
             p.transform.localPosition = pos;
 
             piecesList.Add(p);
@@ -139,7 +139,21 @@ public class Bubble : MonoBehaviour
             newPosition.x = Mathf.Round(newPosition.x) - 0.5f;
             newPosition.y = Mathf.Round(newPosition.y) - 0.5f;
 
-            //bool isValid = board.isValidPosition(pieceCells, newPosition);
+            bool isValid = board.IsValidPosition(piecesList);
+            if (isValid)
+            {
+                for (int i = 0; i < piecesList.Count; i++)
+                {
+                    piecesList[i].transform.localScale = Vector3.one * 0.7f;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < piecesList.Count; i++)
+                {
+                    piecesList[i].transform.localScale = Vector3.one;
+                }
+            }
 
             transform.position = newPosition;
 
@@ -152,19 +166,25 @@ public class Bubble : MonoBehaviour
 
         if (!isFalling)
         {
-            bool isValid = board.isValidMove(pieceCells, transform.position, piecesList);
-
-            if (!isValid)
+            bool isValid = board.IsValidMove(piecesList);
+            if (isValid)
             {
+                // destroy the piece
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                // Normal size
+                for (int i = 0; i < piecesList.Count; i++)
+                {
+                    piecesList[i].transform.localScale = Vector3.one;
+                }
+
                 ShrinkPiece();
 
                 bubbleSpriteRenderer.enabled = true;
                 bubbleCol.enabled = true;
                 isFalling = true;
-            }
-            else
-            {
-                isActive = false;
             }
         }
     }

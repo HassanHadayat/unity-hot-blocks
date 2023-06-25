@@ -127,9 +127,9 @@ MonoBehaviour:
   status: 0
   spriteRenderer: {fileID: 6697589346235157042}
   blockSprites:
-  - {fileID: 21300000, guid: 6ff6b85966aeb3f4ab304af07f4dd424, type: 3}
-  - {fileID: 21300000, guid: b109e0a46ebdde140abbe8ffe76f424c, type: 3}
-  - {fileID: 21300000, guid: 019e0880cb7a5b04e9397e93cddcc382, type: 3}
-  - {fileID: 21300000, guid: 35a3a47936e735945aca498f718eaef4, type: 3}
-  - {fileID: 21300000, guid: 51a1485338acae84585e3ea525804668, type: 3}
-  - {fileID: 21300000, guid: 774fa586ba243f54f92bce708ecb917b, type: 3}
+  - {fileID: 21300000, guid: de0f4de3209ba2c42874afb3c5329c15, type: 3}
+  - {fileID: 21300000, guid: 19bcdb5721d1ceb44a6f5b9aca8471a8, type: 3}
+  - {fileID: 21300000, guid: e0d5a1dfa0adf414383036f38ba6c99f, type: 3}
+  - {fileID: 21300000, guid: 5d268f4dcfb498448aa274e8777c336e, type: 3}
+  - {fileID: 21300000, guid: edee41305ff54424d964b703af71add5, type: 3}
+  - {fileID: 21300000, guid: ce77cc74bf889ae4a94d67133cae73dd, type: 3}

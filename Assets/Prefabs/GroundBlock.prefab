@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4552095419038202061}
   - component: {fileID: 8804287164697127886}
   m_Layer: 0
-  m_Name: Brick
+  m_Name: GroundBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: b109e0a46ebdde140abbe8ffe76f424c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 19bcdb5721d1ceb44a6f5b9aca8471a8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
