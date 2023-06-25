@@ -195,7 +195,7 @@ public class Bubble : MonoBehaviour
     }
     private void ShrinkPiece()
     {
-        piece.transform.localScale = Vector3.one * 0.2f;
+        piece.transform.localScale = Vector3.one * 0.3f;
     }
     private void ExpandPiece()
     {

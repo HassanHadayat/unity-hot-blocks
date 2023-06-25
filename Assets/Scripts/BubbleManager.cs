@@ -20,7 +20,7 @@ public class BubbleManager : MonoBehaviour
 
     private void Start()
     {
-        InvokeRepeating("SpawnBubble", 0f, 5f);
+        InvokeRepeating("SpawnBubble", 0f, 2.5f);
         //SpawnBubble();
     }
     private void SpawnBubble()
