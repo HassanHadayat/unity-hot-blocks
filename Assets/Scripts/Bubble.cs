@@ -12,7 +12,8 @@ public class Bubble : MonoBehaviour
     public List<GameObject> piecesList = new List<GameObject>();
     public GameObject groundPrefab;
 
-    public SpriteRenderer bubbleSpriteRenderer;
+    public SpriteRenderer bubbleFrontSpriteRenderer;
+    public SpriteRenderer bubbleBackSpriteRenderer;
     public Collider2D bubbleCol;
 
     private bool isFalling = true;
@@ -182,7 +183,8 @@ public class Bubble : MonoBehaviour
 
                 ShrinkPiece();
 
-                bubbleSpriteRenderer.enabled = true;
+                bubbleFrontSpriteRenderer.enabled = true;
+                bubbleBackSpriteRenderer.enabled = true;
                 bubbleCol.enabled = true;
                 isFalling = true;
             }
@@ -190,7 +192,8 @@ public class Bubble : MonoBehaviour
     }
     private void PopBubble()
     {
-        bubbleSpriteRenderer.enabled = false;
+        bubbleFrontSpriteRenderer.enabled = false;
+        bubbleBackSpriteRenderer.enabled = false;
         bubbleCol.enabled = false;
     }
     private void ShrinkPiece()

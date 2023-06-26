@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Device;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UIElements;
 
@@ -26,9 +28,14 @@ public class Board : MonoBehaviour
     {
         grid = new GridBlock[boardSize.y, boardSize.x];
         gridIndex = new Dictionary<Vector3, Vector2Int>();
+
+        int leftStartPos = (-(boardSize.x / 2));
+        int bottomStartPos = -10;
+
+        Debug.Log("Left: " + leftStartPos + ", Bottom: " + bottomStartPos);
         // Create Grid
         int i = 0;
-        for (int x = (-(boardSize.y / 2)); x < boardSize.y / 2; x++, i++)
+        for (int x = -10; x < (boardSize.y - 10); x++, i++)
         {
             int j = 0;
             for (int y = (-(boardSize.x / 2)); y < boardSize.x / 2; y++, j++)
@@ -92,7 +99,6 @@ public class Board : MonoBehaviour
             {
                 int preRowCount = CompletedRowCount();
                 // make the upper tile active for next block
-                Debug.Log("First Loop");
                 for (int i = 0; i < piecesList.Count; i++)
                 {
                     Vector3 tilePosition = piecesList[i].transform.position;
@@ -102,7 +108,6 @@ public class Board : MonoBehaviour
                         grid[index.x, index.y].setStatus(GridBlockStatus.activeEmpty);
                 }
 
-                Debug.Log("Second Loop");
                 // placed the new piece sprites
                 for (int i = 0; i < piecesList.Count; i++)
                 {
@@ -188,5 +193,21 @@ public class Board : MonoBehaviour
                 }
             }
         }
+    }
+
+
+
+    //=======================================================
+    public void OnClickRestartBtn()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    public void OnClickPauseBtn()
+    {
+        Time.timeScale = 0f;
+    }
+    public void OnClickResumeBtn()
+    {
+        Time.timeScale = 1f;
     }
 }

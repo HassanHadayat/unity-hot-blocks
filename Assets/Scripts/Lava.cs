@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Lava : MonoBehaviour
 {
-    public float speed = 1f / 30f;      // Speed at which the lava rises
+    public float speed = 1f / 90f;      // Speed at which the lava rises
 
     private float groundSpeed = 1f / 1f;
     private float concreteSpeed = 1f / 6f;
