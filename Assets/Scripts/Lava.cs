@@ -3,37 +3,34 @@ using UnityEngine;
 
 public class Lava : MonoBehaviour
 {
+    public GameUIManager GameUIManager;
     public float speed = 1f / 90f;      // Speed at which the lava rises
 
-    private float groundSpeed = 1f / 1f;
-    private float concreteSpeed = 1f / 6f;
-    private float bronzeSpeed = 1f / 8f;
-    private float obsidianSpeed = 1f / 10f;
-    private float diamondSpeed = 1f / 12f;
+    private float groundSpeed = 1f / 2f;
+    private float concreteSpeed = 1f / 7f;
+    private float bronzeSpeed = 1f / 9f;
+    private float obsidianSpeed = 1f / 11f;
+    private float diamondSpeed = 1f / 13f;
 
-    private float groundDelay = 1f;
-    private float concreteDelay = 6f;
-    private float bronzeDelay = 8f;
-    private float obsidianDelay = 10f;
-    private float diamondDelay = 12f;
-
-    private void Start()
-    {
-    }
+    private float groundDelay =2f;
+    private float concreteDelay = 7f;
+    private float bronzeDelay = 9f;
+    private float obsidianDelay = 11f;
+    private float diamondDelay = 13f;
 
     private void Update()
     {
-
         // Move the lava upwards
         transform.Translate(Vector3.up * speed * Time.deltaTime);
 
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Trigger Enter");
         float delayTime = 1f;
         if (collision.tag == "Grid Block")
         {
+            Debug.Log("Lava Touched Grid Block");
+
             GridBlockStatus _status = collision.GetComponent<GridBlock>().status;
             if (_status == GridBlockStatus.ground)
             {
@@ -70,12 +67,21 @@ public class Lava : MonoBehaviour
         }
         else if(collision.tag == "Bubble")
         {
+            Debug.Log("Lava Touched Bubble");
+
             Destroy(collision.gameObject);
+        }
+        else if(collision.tag == "Border")
+        {
+            Debug.Log("Lava Touched Border End Line.... Game End");
+
+            GameUIManager.GameEnd();
         }
     }
 
     IEnumerator DestroyGridBlock(GameObject gridBlock, float delayTime)
     {
+        gridBlock.GetComponent<GridBlock>().Broke();
         yield return new WaitForSeconds(delayTime);
         gridBlock.GetComponent<GridBlock>().setStatus(GridBlockStatus.empty);
     }

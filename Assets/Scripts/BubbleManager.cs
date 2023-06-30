@@ -28,7 +28,7 @@ public class BubbleManager : MonoBehaviour
         int random = Random.Range(0, tetrominoes.Length);
         TetrominoData data = tetrominoes[random];
 
-        float randomValue = Random.Range(-4, 6) - 0.5f;
+        float randomValue = Random.Range(-3.5f, 4.5f) - 0.5f;
         spawnPosition.x = randomValue;
 
         Vector3 spawnPos = spawnPosition;

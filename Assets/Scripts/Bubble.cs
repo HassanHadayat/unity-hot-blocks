@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Bubble : MonoBehaviour
@@ -19,6 +20,8 @@ public class Bubble : MonoBehaviour
     private bool isFalling = true;
     public Vector3 dragOffset = new Vector3(0f, 0.2f, 0f);
     private bool isActive = true;
+    public bool isRotated = false;
+
 
     public void Initialize(Board board, Vector3 position, TetrominoData data)
     {
@@ -37,25 +40,13 @@ public class Bubble : MonoBehaviour
         }
 
         // Apply Rotation randomly
-        ApplyRotationMatrix();
+        isRotated = ApplyRotationMatrix();
 
         // Instantiate Bubble Piece
         this.transform.position = position;
         for (int i = 0; i < pieceCells.Length; i++)
         {
-            float alignmentX = 0f;
-            float alignmentY = 0f;
-            //if (this.data.tetromino == Tetromino.I || this.data.tetromino == Tetromino.O)
-            //{
-            //    //alignmentX = 0.1f;
-            //}
-            //if (this.data.tetromino == Tetromino.I || this.data.tetromino == Tetromino.S || this.data.tetromino == Tetromino.Z)
-            //{
-            //    //alignmentY = 0.1f;
-            //}
-
-            //Vector3 pos = new Vector3((pieceCells[i].x * 0.2f) - alignmentX, (pieceCells[i].y * 0.2f) - alignmentX - alignmentY, 0f);
-            Vector3 pos = new Vector3(pieceCells[i].x - alignmentX, pieceCells[i].y - alignmentX - alignmentY, 0f);
+            Vector3 pos = new Vector3(pieceCells[i].x, pieceCells[i].y, 0f);
             GameObject p = Instantiate(groundPrefab, piece.transform);
             p.transform.localPosition = pos;
 
@@ -66,7 +57,6 @@ public class Bubble : MonoBehaviour
     }
     private void Update()
     {
-        //Debug.Log("Prev Pos = " + prevPosition);
         if (isFalling && isActive)
             Fall(new Vector3(0f, -Time.deltaTime, 0f));
     }
@@ -80,10 +70,20 @@ public class Bubble : MonoBehaviour
 
     }
 
-    private void ApplyRotationMatrix()
+    private bool ApplyRotationMatrix()
     {
+        // no rotation for Tetromino O required
+        if (data.tetromino == Tetromino.A || data.tetromino == Tetromino.O) { return false; }
+
         int randValue = Random.Range(0, 3);
-        if (randValue == 0) return;
+
+        // 0 for no rotate
+        if (randValue == 0) return false;
+
+        // only one direction rotation for straight Tetromino
+        if (data.tetromino == Tetromino.B || data.tetromino == Tetromino.I)
+            randValue = 2;
+
         int direction = (randValue == 1) ? -1 : 1;
 
         float[] matrix = Data.RotationMatrix;
@@ -114,11 +114,13 @@ public class Bubble : MonoBehaviour
 
             pieceCells[i] = new Vector3Int(x, y, 0);
         }
+        return true;
     }
 
 
     private void OnMouseDown()
     {
+        if (Time.timeScale == 0) return;
         if (!isActive) return;
         prevPosition = transform.position;
         isFalling = false;
@@ -127,6 +129,8 @@ public class Bubble : MonoBehaviour
     }
     private void OnMouseDrag()
     {
+        if (Time.timeScale == 0) return;
+
         if (!isActive) return;
 
         if (!isFalling)
@@ -163,6 +167,7 @@ public class Bubble : MonoBehaviour
     }
     private void OnMouseUp()
     {
+        if (Time.timeScale == 0) return;
         if (!isActive) return;
 
         if (!isFalling)
@@ -198,10 +203,66 @@ public class Bubble : MonoBehaviour
     }
     private void ShrinkPiece()
     {
+        // Downscale the Piece
         piece.transform.localScale = Vector3.one * 0.3f;
+
+        float alignmentX = 0f;
+        float alignmentY = 0f;
+
+        if (this.data.tetromino == Tetromino.O)
+        {
+            alignmentX = -0.15f;
+            alignmentY = -0.15f;
+        }
+        else if (this.data.tetromino == Tetromino.B || this.data.tetromino == Tetromino.I)
+        {
+            if (isRotated)
+            {
+                if (this.data.tetromino == Tetromino.B)
+                    alignmentY = 0.15f;
+                else
+                    alignmentY = -0.15f;
+            }
+            else
+            {
+                alignmentX = -0.15f;
+            }
+        }
+
+        Vector3 prePos = piece.transform.localPosition;
+        piece.transform.localPosition = new Vector3(prePos.x + alignmentX, prePos.y + alignmentY, prePos.z);
+
     }
     private void ExpandPiece()
     {
+        float alignmentX = 0f;
+        float alignmentY = 0f;
+
+        if (this.data.tetromino == Tetromino.O)
+        {
+            alignmentX = 0.15f;
+            alignmentY = 0.15f;
+        }
+        else if (this.data.tetromino == Tetromino.B || this.data.tetromino == Tetromino.I)
+        {
+            if (isRotated)
+            {
+                if (this.data.tetromino == Tetromino.B)
+                    alignmentY = -0.15f;
+                else
+                    alignmentY = 0.15f;
+            }
+            else
+            {
+                alignmentX = 0.15f;
+            }
+        }
+
+        Vector3 prePos = piece.transform.localPosition;
+        piece.transform.localPosition = new Vector3(prePos.x + alignmentX, prePos.y + alignmentY, prePos.z);
+
+
+        // Upscale the Piece
         piece.transform.localScale = Vector3.one;
     }
 }

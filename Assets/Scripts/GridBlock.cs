@@ -9,10 +9,11 @@ public class GridBlock : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public Sprite[] blockSprites;
     public Dictionary<GridBlockStatus, Sprite> sprites;
+    public GameObject brokeSprite;
 
     private void Start()
     {
-        sprites= new Dictionary<GridBlockStatus, Sprite>();
+        sprites = new Dictionary<GridBlockStatus, Sprite>();
         sprites.Add(GridBlockStatus.empty, blockSprites[0]);
         sprites.Add(GridBlockStatus.activeEmpty, blockSprites[0]);
         sprites.Add(GridBlockStatus.ground, blockSprites[1]);
@@ -28,5 +29,33 @@ public class GridBlock : MonoBehaviour
     {
         status = newStatus;
         spriteRenderer.sprite = sprites[status];
+    }
+    public void Broke()
+    {
+        if (status == GridBlockStatus.ground)
+        {
+            Invoke("BrokeDelay", 0.5f);
+        }
+        else if (status == GridBlockStatus.concrete)
+        {
+            Invoke("BrokeDelay", 2f);
+        }
+        else if (status == GridBlockStatus.bronze)
+        {
+            Invoke("BrokeDelay", 3f);
+        }
+        else if (status == GridBlockStatus.obsidian)
+        {
+            Invoke("BrokeDelay", 4f);
+        }
+        else if (status == GridBlockStatus.diamond)
+        {
+            Invoke("BrokeDelay", 5f);
+        }
+    }
+    private void BrokeDelay()
+    {
+        if (status != GridBlockStatus.empty && status != GridBlockStatus.activeEmpty)
+            brokeSprite.SetActive(true);
     }
 }

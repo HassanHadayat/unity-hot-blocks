@@ -2,16 +2,12 @@ using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Device;
-using UnityEngine.SceneManagement;
-using UnityEngine.Tilemaps;
-using UnityEngine.UIElements;
 
 
 public class Board : MonoBehaviour
 {
+    public GameUIManager GameUIManager;
     public GameObject gridPrefab;
     public GameObject borderPrefab;
     public Vector2Int boardSize = new Vector2Int(10, 20);
@@ -119,6 +115,9 @@ public class Board : MonoBehaviour
 
                 // update to new material if combo rows
                 int postRowCount = CompletedRowCount();
+                int newScore = 1 + (postRowCount - preRowCount);
+                GameUIManager.UpdateScore(newScore);
+
                 if (postRowCount - preRowCount > 0)
                 {
                     TransformRows(postRowCount - preRowCount);
@@ -195,19 +194,4 @@ public class Board : MonoBehaviour
         }
     }
 
-
-
-    //=======================================================
-    public void OnClickRestartBtn()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-    public void OnClickPauseBtn()
-    {
-        Time.timeScale = 0f;
-    }
-    public void OnClickResumeBtn()
-    {
-        Time.timeScale = 1f;
-    }
 }
