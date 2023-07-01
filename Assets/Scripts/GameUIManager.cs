@@ -11,7 +11,8 @@ public class GameUIManager : MonoBehaviour
     public GameObject gameEndPanel;
     public TextMeshProUGUI gameEndYourScoreText;
     public TextMeshProUGUI gameEndHighestScoreText;
-
+    public GameObject UICanvas;
+   
     public void GameEnd()
     {
         restartBtn.SetActive(false);
@@ -50,4 +51,8 @@ public class GameUIManager : MonoBehaviour
         Time.timeScale = 1f;
     }
 
+    private void OnDisable()
+    {
+        Time.timeScale = 1f;
+    }
 }

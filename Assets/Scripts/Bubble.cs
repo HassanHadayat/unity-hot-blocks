@@ -7,7 +7,7 @@ public class Bubble : MonoBehaviour
     public Board board { get; private set; }
     public TetrominoData data { get; private set; }
     public Vector3Int[] pieceCells { get; private set; }
-    public Vector3 position { get; private set; }
+
     public Vector3 prevPosition;
     public GameObject piece;
     public List<GameObject> piecesList = new List<GameObject>();
@@ -27,7 +27,6 @@ public class Bubble : MonoBehaviour
     {
         this.data = data;
         this.board = board;
-        this.position = position;
 
         // Store Bubble Piece Cell data
         if (pieceCells == null)
@@ -66,8 +65,6 @@ public class Bubble : MonoBehaviour
         newPosition.y += translation.y;
 
         transform.position = newPosition;
-        position = newPosition;
-
     }
 
     private bool ApplyRotationMatrix()
@@ -161,8 +158,6 @@ public class Bubble : MonoBehaviour
             }
 
             transform.position = newPosition;
-
-            position = newPosition;
         }
     }
     private void OnMouseUp()
@@ -265,4 +260,15 @@ public class Bubble : MonoBehaviour
         // Upscale the Piece
         piece.transform.localScale = Vector3.one;
     }
+}
+
+
+
+public class BubbleTetromino : Bubble
+{
+
+}
+public class BubblePowerup:Bubble
+{
+
 }

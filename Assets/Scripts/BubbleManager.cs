@@ -7,6 +7,7 @@ public class BubbleManager : MonoBehaviour
     public GameObject bubblePrefab;
     public List<GameObject> bubbles;
     public TetrominoData[] tetrominoes;
+    public PowerupData[] powerups;
 
     public Vector3 spawnPosition = new Vector3(-4.5f, 15f, 0f);
 
@@ -15,6 +16,11 @@ public class BubbleManager : MonoBehaviour
         for (int i = 0; i < tetrominoes.Length; i++)
         {
             tetrominoes[i].Initialize();
+        }
+
+        for (int i = 0; i < powerups.Length; i++)
+        {
+            powerups[i].Initialize();
         }
     }
 
