@@ -3061,7 +3061,7 @@ MonoBehaviour:
           m_MethodName: set_sprite
           m_Mode: 2
           m_Arguments:
-            m_ObjectArgument: {fileID: 21300000, guid: f0720d9c64b892d41bfcf8ea053fb20c, type: 3}
+            m_ObjectArgument: {fileID: 21300000, guid: db5236f1b601f9e4eac6c0e467329fd0, type: 3}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Sprite, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
@@ -3077,7 +3077,7 @@ MonoBehaviour:
           m_MethodName: set_sprite
           m_Mode: 2
           m_Arguments:
-            m_ObjectArgument: {fileID: 21300000, guid: 289cba4d198f4054d8f78d3252e51d31, type: 3}
+            m_ObjectArgument: {fileID: 21300000, guid: db5236f1b601f9e4eac6c0e467329fd0, type: 3}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Sprite, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
@@ -3947,27 +3947,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aebb4f79bb7e1034fb6b751c218d695a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bubblePrefab: {fileID: 8727331072676802161, guid: f43b3522eb1587e4db2a4c4dd28916a2, type: 3}
+  bubbleTetrominoPrefab: {fileID: 8727331072676802161, guid: f43b3522eb1587e4db2a4c4dd28916a2, type: 3}
+  bubblePowerupPrefab: {fileID: 8727331072676802161, guid: 2a015efe99c9ba044a868728f8a484ed, type: 3}
   bubbles: []
   tetrominoes:
   - sprite: {fileID: 21300000, guid: b109e0a46ebdde140abbe8ffe76f424c, type: 3}
-    tetromino: 0
+    tetromino: 7
+    prefab: {fileID: 3393139675133798468, guid: ffe91211650db9c4e92e99811035f805, type: 3}
   - sprite: {fileID: 21300000, guid: b109e0a46ebdde140abbe8ffe76f424c, type: 3}
     tetromino: 3
+    prefab: {fileID: 3393139675133798468, guid: ffe91211650db9c4e92e99811035f805, type: 3}
   - sprite: {fileID: 21300000, guid: b109e0a46ebdde140abbe8ffe76f424c, type: 3}
     tetromino: 5
-  - sprite: {fileID: 21300000, guid: b109e0a46ebdde140abbe8ffe76f424c, type: 3}
-    tetromino: 1
+    prefab: {fileID: 3393139675133798468, guid: ffe91211650db9c4e92e99811035f805, type: 3}
   - sprite: {fileID: 21300000, guid: b109e0a46ebdde140abbe8ffe76f424c, type: 3}
     tetromino: 2
+    prefab: {fileID: 3393139675133798468, guid: ffe91211650db9c4e92e99811035f805, type: 3}
   - sprite: {fileID: 21300000, guid: b109e0a46ebdde140abbe8ffe76f424c, type: 3}
     tetromino: 4
+    prefab: {fileID: 3393139675133798468, guid: ffe91211650db9c4e92e99811035f805, type: 3}
   - sprite: {fileID: 21300000, guid: b109e0a46ebdde140abbe8ffe76f424c, type: 3}
     tetromino: 6
+    prefab: {fileID: 3393139675133798468, guid: ffe91211650db9c4e92e99811035f805, type: 3}
+  - sprite: {fileID: 21300000, guid: b109e0a46ebdde140abbe8ffe76f424c, type: 3}
+    tetromino: 8
+    prefab: {fileID: 3393139675133798468, guid: ffe91211650db9c4e92e99811035f805, type: 3}
   - sprite: {fileID: 21300000, guid: b109e0a46ebdde140abbe8ffe76f424c, type: 3}
     tetromino: 0
+    prefab: {fileID: 3393139675133798468, guid: ffe91211650db9c4e92e99811035f805, type: 3}
   - sprite: {fileID: 21300000, guid: b109e0a46ebdde140abbe8ffe76f424c, type: 3}
     tetromino: 1
+    prefab: {fileID: 3393139675133798468, guid: ffe91211650db9c4e92e99811035f805, type: 3}
+  powerups:
+  - sprite: {fileID: 21300000, guid: fca7b1a314f7fcf4b925bf01dfd3e506, type: 3}
+    powerup: 0
+    prefab: {fileID: 3393139675133798468, guid: 09ce8958fff4efe4791ac1a40ff7721c, type: 3}
+  - sprite: {fileID: 21300000, guid: a85abc4ff58e04b478d5d603672d4321, type: 3}
+    powerup: 1
+    prefab: {fileID: 3393139675133798468, guid: 9d778a0f13ba601448a9c3fe6fc190b3, type: 3}
+  - sprite: {fileID: 21300000, guid: c28f9a383da94414b840e40c551b9f39, type: 3}
+    powerup: 2
+    prefab: {fileID: 3393139675133798468, guid: ec8392f68d8a64940996d6bb7919bb37, type: 3}
   spawnPosition: {x: -4.5, y: 15, z: 0}
 --- !u!1 &1779432825
 GameObject:
@@ -4285,6 +4305,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1932006026}
   - component: {fileID: 1932006027}
+  - component: {fileID: 1932006028}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -4326,8 +4347,21 @@ MonoBehaviour:
   gameEndPanel: {fileID: 443837653}
   gameEndYourScoreText: {fileID: 776777475}
   gameEndHighestScoreText: {fileID: 2096340524}
-  loadingPagePrefab: {fileID: 1920177645734949162, guid: 9106c15ec30e3c947b6bffe4f48d9805, type: 3}
   UICanvas: {fileID: 797722735}
+--- !u!114 &1932006028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1932006025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c2011961e452b14380124274edf8364, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameUIManager: {fileID: 1932006027}
+  linePoints: 0000000028000000640000002c010000b0040000
 --- !u!1 &1995301814
 GameObject:
   m_ObjectHideFlags: 0
@@ -4646,9 +4680,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2070358910}
   - component: {fileID: 2070358909}
-  - component: {fileID: 2070358911}
   - component: {fileID: 2070358912}
   - component: {fileID: 2070358913}
+  - component: {fileID: 2070358911}
   m_Layer: 0
   m_Name: Lava
   m_TagString: Untagged
@@ -4736,8 +4770,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0100149335ac4684da40ce9c376fc66a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  board: {fileID: 1739693894}
   GameUIManager: {fileID: 1932006027}
+  col: {fileID: 2070358912}
+  spriteRenderer: {fileID: 2070358909}
   speed: 0.033333335
+  lavaMat: {fileID: 2100000, guid: 961dede77b6f404438a22dca3e99f708, type: 2}
+  snowMat: {fileID: 2100000, guid: 62d5ff734b1582642af83df887222c39, type: 2}
 --- !u!61 &2070358912
 BoxCollider2D:
   m_ObjectHideFlags: 0

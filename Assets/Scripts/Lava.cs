@@ -1,9 +1,14 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Lava : MonoBehaviour
 {
+    public Board board;
     public GameUIManager GameUIManager;
+    public Collider2D col;
+    public SpriteRenderer spriteRenderer;
+
     public float speed = 1f / 90f;      // Speed at which the lava rises
 
     private float groundSpeed = 1f / 2f;
@@ -12,77 +17,144 @@ public class Lava : MonoBehaviour
     private float obsidianSpeed = 1f / 11f;
     private float diamondSpeed = 1f / 13f;
 
-    private float groundDelay =2f;
+    private float groundDelay = 2f;
     private float concreteDelay = 7f;
     private float bronzeDelay = 9f;
     private float obsidianDelay = 11f;
     private float diamondDelay = 13f;
 
+    private float intensity = 2f;
+    private bool isReached = false;
+    private bool isDestroying = false;
+    private int isDestroyingCount = 0;
+    private bool isBurning = false;
+
+    public Material lavaMat;
+    public Material snowMat;
+    private float freezeLavaTimer;
+    private bool isFreezeLava = false;
+    private bool isGameEnd = false;
+
     private void Update()
     {
-        // Move the lava upwards
-        transform.Translate(Vector3.up * speed * Time.deltaTime);
+        // Freeze Lava Powerup
+        if (isFreezeLava)
+        {
+            freezeLavaTimer -= Time.deltaTime;
+
+            if (freezeLavaTimer <= 0)
+            {
+                StopFreezeLava();
+            }
+        }
+        else
+        {
+
+            // Move the lava upwards
+            if (!isReached)
+                transform.Translate(Vector3.up * speed * Time.deltaTime);
+            else if (isGameEnd)
+                transform.Translate(Vector3.up * 15f * Time.deltaTime);
+            else
+                Burn();
+        }
 
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void Burn()
     {
-        float delayTime = 1f;
-        if (collision.tag == "Grid Block")
+        if (!isBurning)
         {
-            Debug.Log("Lava Touched Grid Block");
+            isBurning = true;
+            GridBlockStatus _status = board.CheckRowStatus(0);
 
-            GridBlockStatus _status = collision.GetComponent<GridBlock>().status;
             if (_status == GridBlockStatus.ground)
             {
                 Debug.Log("Ground");
-                delayTime = groundDelay;
-                speed = groundSpeed;
+                intensity = groundDelay;
             }
             else if (_status == GridBlockStatus.concrete)
             {
                 Debug.Log("concrete");
-                delayTime = concreteDelay;
-                speed = concreteSpeed;
+                intensity = concreteDelay;
             }
             else if (_status == GridBlockStatus.bronze)
             {
                 Debug.Log("bronze");
-                delayTime = bronzeDelay;
-                speed = bronzeSpeed;
+                intensity = bronzeDelay;
             }
             else if (_status == GridBlockStatus.obsidian)
             {
                 Debug.Log("obsidian");
-                delayTime = obsidianDelay;
-                speed = obsidianSpeed;
+                intensity = obsidianDelay;
             }
             else if (_status == GridBlockStatus.diamond)
             {
                 Debug.Log("diamond");
-                delayTime = diamondDelay;
-                speed = diamondSpeed;
+                intensity = diamondDelay;
+            }
+            else
+            {
+                // Check Game End Condition
+                intensity = groundDelay;
+
+                if (!board.AnyActiveBlockRem())
+                {
+                    isGameEnd = true;
+                    Invoke("DelayGameEnd", 1.5f);
+                }
             }
 
-            StartCoroutine(DestroyGridBlock(collision.gameObject, delayTime));
+            StartCoroutine(DestroyGridBlock());
+
         }
-        else if(collision.tag == "Bubble")
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Bubble")
         {
             Debug.Log("Lava Touched Bubble");
 
             Destroy(collision.gameObject);
         }
-        else if(collision.tag == "Border")
+        else if (collision.tag == "Border")
         {
-            Debug.Log("Lava Touched Border End Line.... Game End");
-
-            GameUIManager.GameEnd();
+            Debug.Log("Lava Touched Border Start Line....");
+            isReached = true;
         }
     }
 
-    IEnumerator DestroyGridBlock(GameObject gridBlock, float delayTime)
+    IEnumerator DestroyGridBlock()
     {
-        gridBlock.GetComponent<GridBlock>().Broke();
-        yield return new WaitForSeconds(delayTime);
-        gridBlock.GetComponent<GridBlock>().setStatus(GridBlockStatus.empty);
+        float tempIntensity = intensity;
+        yield return new WaitForSeconds(tempIntensity / 2f);
+        yield return new WaitUntil(() => !isFreezeLava);
+        board.BrokeRow(0);
+
+        yield return new WaitForSeconds(tempIntensity / 2);
+        yield return new WaitUntil(() => !isFreezeLava);
+        board.DestroyRow(0);
+
+        yield return new WaitForSeconds(0.2f);
+        // Move All the Blocks Downward
+        board.MoveRowsDownward();
+        isBurning = false;
+    }
+
+    public void StartFreezeLava()
+    {
+        freezeLavaTimer = 10f;
+        isFreezeLava = true;
+        spriteRenderer.material = snowMat;
+    }
+    public void StopFreezeLava()
+    {
+        isFreezeLava = false;
+        freezeLavaTimer = 0f;
+        spriteRenderer.material = lavaMat;
+    }
+
+    private void DelayGameEnd()
+    {
+        GameUIManager.GameEnd();
     }
 }

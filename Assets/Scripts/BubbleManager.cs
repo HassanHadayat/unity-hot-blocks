@@ -4,7 +4,8 @@ using UnityEngine;
 public class BubbleManager : MonoBehaviour
 {
 
-    public GameObject bubblePrefab;
+    public GameObject bubbleTetrominoPrefab;
+    public GameObject bubblePowerupPrefab;
     public List<GameObject> bubbles;
     public TetrominoData[] tetrominoes;
     public PowerupData[] powerups;
@@ -26,21 +27,35 @@ public class BubbleManager : MonoBehaviour
 
     private void Start()
     {
-        InvokeRepeating("SpawnBubble", 0f, 2.5f);
-        //SpawnBubble();
+        InvokeRepeating("SpawnBubbleTetromino", 0f, 4f);
+        InvokeRepeating("SpawnBubblePowerup", 20f, 20f);
     }
-    private void SpawnBubble()
+    private void SpawnBubbleTetromino()
     {
-        int random = Random.Range(0, tetrominoes.Length);
-        TetrominoData data = tetrominoes[random];
-
         float randomValue = Random.Range(-3.5f, 4.5f) - 0.5f;
         spawnPosition.x = randomValue;
 
+        TetrominoData data = tetrominoes[Random.Range(0, tetrominoes.Length)];
+
         Vector3 spawnPos = spawnPosition;
-        GameObject newBubble = Instantiate(bubblePrefab, spawnPos, Quaternion.identity, this.transform);
-        newBubble.GetComponent<Bubble>().Initialize(GetComponent<Board>(), spawnPos, data);
+        GameObject newBubble = Instantiate(bubbleTetrominoPrefab, spawnPos, Quaternion.identity, this.transform);
+
+        newBubble.GetComponent<BubbleTetromino>().Initialize(GetComponent<Board>(), spawnPos, data);
         bubbles.Add(newBubble);
     }
 
+
+    private void SpawnBubblePowerup()
+    {
+        float randomValue = Random.Range(-3.5f, 4.5f) - 0.5f;
+        spawnPosition.x = randomValue;
+
+        PowerupData data = powerups[Random.Range(0, powerups.Length)];
+        
+        Vector3 spawnPos = spawnPosition;
+        GameObject newBubble = Instantiate(bubblePowerupPrefab, spawnPos, Quaternion.identity, this.transform);
+
+        newBubble.GetComponent<BubblePowerup>().Initialize(GetComponent<Board>(), spawnPos, data);
+        bubbles.Add(newBubble);
+    }
 }

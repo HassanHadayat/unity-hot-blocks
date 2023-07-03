@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -28,7 +29,6 @@ public class Board : MonoBehaviour
         int leftStartPos = (-(boardSize.x / 2));
         int bottomStartPos = -10;
 
-        Debug.Log("Left: " + leftStartPos + ", Bottom: " + bottomStartPos);
         // Create Grid
         int i = 0;
         for (int x = -10; x < (boardSize.y - 10); x++, i++)
@@ -45,6 +45,7 @@ public class Board : MonoBehaviour
                     StartCoroutine(DelayInitializeGridBlock(gridBlock.GetComponent<GridBlock>()));
                 }
                 grid[i, j] = gridBlock.GetComponent<GridBlock>();
+                grid[i, j].index = new Vector2Int(i, j);
                 gridIndex.Add(position, new Vector2Int(i, j));
             }
         }
@@ -60,6 +61,88 @@ public class Board : MonoBehaviour
     }
 
 
+    public GridBlockStatus CheckRowStatus(int row)
+    {
+        return grid[row, 0].status;
+    }
+    public void BrokeRow(int row)
+    {
+        for (int j = 0; j < boardSize.x; j++)
+        {
+            grid[row, j].Broke();
+        }
+    }
+    public void DestroyRow(int row)
+    {
+        for (int j = 0; j < boardSize.x; j++)
+        {
+            grid[row, j].setStatus(GridBlockStatus.empty);
+        }
+    }
+    public void MoveBlockDownward(int j)
+    {
+        for (int i = 0; i < boardSize.y; i++)
+        {
+            if (i < boardSize.y - 1)
+                grid[i, j].setStatus(grid[i + 1, j].status);
+            else
+            {
+                if (grid[i - 1, j].status != GridBlockStatus.empty && grid[i - 1, j].status != GridBlockStatus.activeEmpty)
+                    grid[i, j].setStatus(GridBlockStatus.activeEmpty);
+                else
+                    grid[i, j].setStatus(GridBlockStatus.empty);
+            }
+
+        }
+    }
+    public void MoveRowsDownward()
+    {
+        for (int i = 0; i < boardSize.y; i++)
+        {
+            for (int j = 0; j < boardSize.x; j++)
+            {
+                if (i < boardSize.y - 1)
+                    grid[i, j].setStatus(grid[i + 1, j].status);
+                else
+                {
+                    if (grid[i - 1, j].status != GridBlockStatus.empty && grid[i - 1, j].status != GridBlockStatus.activeEmpty)
+                        grid[i, j].setStatus(GridBlockStatus.activeEmpty);
+                    else
+                        grid[i, j].setStatus(GridBlockStatus.empty);
+                }
+
+            }
+        }
+    }
+    public bool MagicBlockPowerup(GameObject item)
+    {
+        try
+        {
+            bool isValid = IsValidPosition(new List<GameObject> { item });
+            if (isValid)
+            {
+                Vector3 tilePosition = item.transform.position;
+                Vector2Int index = gridIndex[tilePosition];
+                int randomStatus = UnityEngine.Random.Range(2, 7);
+
+                for (int j = 0; j < boardSize.x; j++)
+                {
+                    grid[index.x, j].setStatus((GridBlockStatus)randomStatus);
+                    if (index.x + 1 < boardSize.y)
+                    {
+                        if (grid[index.x + 1, j].status == GridBlockStatus.empty)
+                            grid[index.x + 1, j].setStatus(GridBlockStatus.activeEmpty);
+                    }
+                }
+            }
+            return isValid;
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.Message);
+            return false;
+        }
+    }
     public bool IsValidPosition(List<GameObject> piecesList)
     {
         try
@@ -115,12 +198,12 @@ public class Board : MonoBehaviour
 
                 // update to new material if combo rows
                 int postRowCount = CompletedRowCount();
-                int newScore = 1 + (postRowCount - preRowCount);
-                GameUIManager.UpdateScore(newScore);
+                int rowsCount = (postRowCount - preRowCount);
+                ScoringSystem.instance.UpdateScore(rowsCount, piecesList.Count);
 
-                if (postRowCount - preRowCount > 0)
+                if (rowsCount > 0)
                 {
-                    TransformRows(postRowCount - preRowCount);
+                    TransformRows(rowsCount);
                 }
 
             }
@@ -192,6 +275,19 @@ public class Board : MonoBehaviour
                 }
             }
         }
+    }
+
+    public bool AnyActiveBlockRem()
+    {
+        for (int i = 0; i < boardSize.y; i++)
+        {
+            for (int j = 0; j < boardSize.x; j++)
+            {
+                if (grid[i, j].status == GridBlockStatus.activeEmpty)
+                    return true;
+            }
+        }
+        return false;
     }
 
 }

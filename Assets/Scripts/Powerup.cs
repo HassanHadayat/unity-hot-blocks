@@ -3,7 +3,7 @@ using UnityEngine;
 
 public enum Powerup
 {
-    TimeFreeze, Points2x, MagicBlock
+    FreezeLava, Points2x, MagicBlock
 }
 
 [System.Serializable]
@@ -11,6 +11,7 @@ public struct PowerupData
 {
     public Sprite sprite;
     public Powerup powerup;
+    public GameObject prefab;
 
     public Vector2Int[] cells { get; private set; }
 

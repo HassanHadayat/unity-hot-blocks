@@ -29,10 +29,9 @@ public class GameUIManager : MonoBehaviour
             PlayerPrefs.SetInt("HighestScore", newScore);
         }
     }
-    public void UpdateScore(int score)
+    public void UpdateScore()
     {
-        int newScore = int.Parse(scoreText.text) + score;
-        scoreText.text = (newScore).ToString();
+        scoreText.text = (ScoringSystem.instance.currScore).ToString();
     }
     public void OnClick_HomeBtn()
     {

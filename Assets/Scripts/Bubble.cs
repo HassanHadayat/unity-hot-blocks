@@ -2,63 +2,37 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class Bubble : MonoBehaviour
+public abstract class Bubble : MonoBehaviour
 {
-    public Board board { get; private set; }
-    public TetrominoData data { get; private set; }
-    public Vector3Int[] pieceCells { get; private set; }
+    public GameObject container { get; private set; }
+    [SerializeField] private SpriteRenderer frontSR;
+    [SerializeField] private SpriteRenderer backSR;
+    [SerializeField] private Collider2D col;
 
-    public Vector3 prevPosition;
-    public GameObject piece;
-    public List<GameObject> piecesList = new List<GameObject>();
-    public GameObject groundPrefab;
+    public Board board { get; set; }
+    public Vector3Int[] cells { get; set; }
 
-    public SpriteRenderer bubbleFrontSpriteRenderer;
-    public SpriteRenderer bubbleBackSpriteRenderer;
-    public Collider2D bubbleCol;
-
-    private bool isFalling = true;
-    public Vector3 dragOffset = new Vector3(0f, 0.2f, 0f);
-    private bool isActive = true;
-    public bool isRotated = false;
+    public GameObject itemPrefab;
+    [HideInInspector] public List<GameObject> itemsList = new List<GameObject>();
 
 
-    public void Initialize(Board board, Vector3 position, TetrominoData data)
+    private Vector3 prevPosition;
+    public bool isFalling = true;
+    public bool isActive = true;
+
+    private void Awake()
     {
-        this.data = data;
-        this.board = board;
-
-        // Store Bubble Piece Cell data
-        if (pieceCells == null)
-        {
-            pieceCells = new Vector3Int[data.cells.Length];
-        }
-        for (int i = 0; i < pieceCells.Length; i++)
-        {
-            pieceCells[i] = (Vector3Int)data.cells[i];
-        }
-
-        // Apply Rotation randomly
-        isRotated = ApplyRotationMatrix();
-
-        // Instantiate Bubble Piece
-        this.transform.position = position;
-        for (int i = 0; i < pieceCells.Length; i++)
-        {
-            Vector3 pos = new Vector3(pieceCells[i].x, pieceCells[i].y, 0f);
-            GameObject p = Instantiate(groundPrefab, piece.transform);
-            p.transform.localPosition = pos;
-
-            piecesList.Add(p);
-        }
-
-        ShrinkPiece();
+        container = transform.GetChild(1).gameObject;
+        frontSR = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        backSR = transform.GetChild(2).GetComponent<SpriteRenderer>();
+        col = GetComponent<Collider2D>();
     }
     private void Update()
     {
         if (isFalling && isActive)
             Fall(new Vector3(0f, -Time.deltaTime, 0f));
     }
+
     private void Fall(Vector3 translation)
     {
         Vector3 newPosition = transform.position;
@@ -66,54 +40,18 @@ public class Bubble : MonoBehaviour
 
         transform.position = newPosition;
     }
-
-    private bool ApplyRotationMatrix()
+    public void PopBubble()
     {
-        // no rotation for Tetromino O required
-        if (data.tetromino == Tetromino.A || data.tetromino == Tetromino.O) { return false; }
-
-        int randValue = Random.Range(0, 3);
-
-        // 0 for no rotate
-        if (randValue == 0) return false;
-
-        // only one direction rotation for straight Tetromino
-        if (data.tetromino == Tetromino.B || data.tetromino == Tetromino.I)
-            randValue = 2;
-
-        int direction = (randValue == 1) ? -1 : 1;
-
-        float[] matrix = Data.RotationMatrix;
-
-        // Rotate all of the cells using the rotation matrix
-        for (int i = 0; i < pieceCells.Length; i++)
-        {
-            Vector3 cell = pieceCells[i];
-
-            int x, y;
-
-            switch (data.tetromino)
-            {
-                case Tetromino.I:
-                case Tetromino.O:
-                    // "I" and "O" are rotated from an offset center point
-                    cell.x -= 0.5f;
-                    cell.y -= 0.5f;
-                    x = Mathf.CeilToInt((cell.x * matrix[0] * direction) + (cell.y * matrix[1] * direction));
-                    y = Mathf.CeilToInt((cell.x * matrix[2] * direction) + (cell.y * matrix[3] * direction));
-                    break;
-
-                default:
-                    x = Mathf.RoundToInt((cell.x * matrix[0] * direction) + (cell.y * matrix[1] * direction));
-                    y = Mathf.RoundToInt((cell.x * matrix[2] * direction) + (cell.y * matrix[3] * direction));
-                    break;
-            }
-
-            pieceCells[i] = new Vector3Int(x, y, 0);
-        }
-        return true;
+        frontSR.enabled = false;
+        backSR.enabled = false;
+        col.enabled = false;
     }
-
+    public void ReformBubble()
+    {
+        frontSR.enabled = true;
+        backSR.enabled = true;
+        col.enabled = true;
+    }
 
     private void OnMouseDown()
     {
@@ -121,13 +59,13 @@ public class Bubble : MonoBehaviour
         if (!isActive) return;
         prevPosition = transform.position;
         isFalling = false;
-        PopBubble();
-        ExpandPiece();
+
+        Expand();
     }
+
     private void OnMouseDrag()
     {
         if (Time.timeScale == 0) return;
-
         if (!isActive) return;
 
         if (!isFalling)
@@ -141,134 +79,26 @@ public class Bubble : MonoBehaviour
             newPosition.x = Mathf.Round(newPosition.x) - 0.5f;
             newPosition.y = Mathf.Round(newPosition.y) - 0.5f;
 
-            bool isValid = board.IsValidPosition(piecesList);
+            bool isValid = board.IsValidPosition(itemsList);
             if (isValid)
             {
-                for (int i = 0; i < piecesList.Count; i++)
+                for (int i = 0; i < itemsList.Count; i++)
                 {
-                    piecesList[i].transform.localScale = Vector3.one * 0.7f;
+                    itemsList[i].transform.localScale = Vector3.one * 0.7f;
                 }
             }
             else
             {
-                for (int i = 0; i < piecesList.Count; i++)
+                for (int i = 0; i < itemsList.Count; i++)
                 {
-                    piecesList[i].transform.localScale = Vector3.one;
+                    itemsList[i].transform.localScale = Vector3.one;
                 }
             }
 
             transform.position = newPosition;
         }
     }
-    private void OnMouseUp()
-    {
-        if (Time.timeScale == 0) return;
-        if (!isActive) return;
 
-        if (!isFalling)
-        {
-            bool isValid = board.IsValidMove(piecesList);
-            if (isValid)
-            {
-                // destroy the piece
-                Destroy(this.gameObject);
-            }
-            else
-            {
-                // Normal size
-                for (int i = 0; i < piecesList.Count; i++)
-                {
-                    piecesList[i].transform.localScale = Vector3.one;
-                }
-
-                ShrinkPiece();
-
-                bubbleFrontSpriteRenderer.enabled = true;
-                bubbleBackSpriteRenderer.enabled = true;
-                bubbleCol.enabled = true;
-                isFalling = true;
-            }
-        }
-    }
-    private void PopBubble()
-    {
-        bubbleFrontSpriteRenderer.enabled = false;
-        bubbleBackSpriteRenderer.enabled = false;
-        bubbleCol.enabled = false;
-    }
-    private void ShrinkPiece()
-    {
-        // Downscale the Piece
-        piece.transform.localScale = Vector3.one * 0.3f;
-
-        float alignmentX = 0f;
-        float alignmentY = 0f;
-
-        if (this.data.tetromino == Tetromino.O)
-        {
-            alignmentX = -0.15f;
-            alignmentY = -0.15f;
-        }
-        else if (this.data.tetromino == Tetromino.B || this.data.tetromino == Tetromino.I)
-        {
-            if (isRotated)
-            {
-                if (this.data.tetromino == Tetromino.B)
-                    alignmentY = 0.15f;
-                else
-                    alignmentY = -0.15f;
-            }
-            else
-            {
-                alignmentX = -0.15f;
-            }
-        }
-
-        Vector3 prePos = piece.transform.localPosition;
-        piece.transform.localPosition = new Vector3(prePos.x + alignmentX, prePos.y + alignmentY, prePos.z);
-
-    }
-    private void ExpandPiece()
-    {
-        float alignmentX = 0f;
-        float alignmentY = 0f;
-
-        if (this.data.tetromino == Tetromino.O)
-        {
-            alignmentX = 0.15f;
-            alignmentY = 0.15f;
-        }
-        else if (this.data.tetromino == Tetromino.B || this.data.tetromino == Tetromino.I)
-        {
-            if (isRotated)
-            {
-                if (this.data.tetromino == Tetromino.B)
-                    alignmentY = -0.15f;
-                else
-                    alignmentY = 0.15f;
-            }
-            else
-            {
-                alignmentX = 0.15f;
-            }
-        }
-
-        Vector3 prePos = piece.transform.localPosition;
-        piece.transform.localPosition = new Vector3(prePos.x + alignmentX, prePos.y + alignmentY, prePos.z);
-
-
-        // Upscale the Piece
-        piece.transform.localScale = Vector3.one;
-    }
-}
-
-
-
-public class BubbleTetromino : Bubble
-{
-
-}
-public class BubblePowerup:Bubble
-{
-
+    public abstract void Shrink();
+    public abstract void Expand();
 }
