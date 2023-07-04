@@ -9,6 +9,8 @@ public class ScoringSystem : MonoBehaviour
     public int currScore { get; private set; }
 
     public List<int> linePoints = new List<int> { 0, 40, 100, 300, 1200 };
+
+    public GameObject points2xImg;
     public bool isPoints2x { get; private set; }
     private float points2xTimer;
 
@@ -25,7 +27,7 @@ public class ScoringSystem : MonoBehaviour
             points2xTimer -= Time.deltaTime;
             if(points2xTimer <= 0f)
             {
-                stop2xPoints();
+                Stop2xPoints();
             }
         }
     }
@@ -38,14 +40,16 @@ public class ScoringSystem : MonoBehaviour
 
         gameUIManager.UpdateScore();
     }
-    public void start2xPoints()
+    public void Start2xPoints()
     {
         points2xTimer = 15f;
         isPoints2x = true;
+        points2xImg.SetActive(true);
     }
-    public void stop2xPoints()
+    public void Stop2xPoints()
     {
         isPoints2x = false;
         points2xTimer = 0f;
+        points2xImg.SetActive(false);
     }
 }

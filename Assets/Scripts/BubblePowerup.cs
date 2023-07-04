@@ -38,6 +38,8 @@ public class BubblePowerup : Bubble
             bool isValid = board.MagicBlockPowerup(itemsList[0]);
             if (isValid)
             {
+                AudioManager.instance?.PlaySFX(SfxAudioClip.powerup);
+
                 // destroy the piece
                 Destroy(this.gameObject);
             }
@@ -70,11 +72,14 @@ public class BubblePowerup : Bubble
 
         if(data.powerup == Powerup.Points2x)
         {
-            ScoringSystem.instance.start2xPoints();
+            AudioManager.instance?.PlaySFX(SfxAudioClip.powerup);
+
+            ScoringSystem.instance.Start2xPoints();
             Destroy(this.gameObject);
         }
         else if(data.powerup == Powerup.FreezeLava)
         {
+            AudioManager.instance?.PlaySFX(SfxAudioClip.powerup);
 
             Debug.Log("Freeze Lava Powerup");
             FindObjectOfType<Lava>().StartFreezeLava();

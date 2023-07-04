@@ -59,7 +59,7 @@ public abstract class Bubble : MonoBehaviour
         if (!isActive) return;
         prevPosition = transform.position;
         isFalling = false;
-
+        AudioManager.instance?.PlaySFX(SfxAudioClip.bubblePop);
         Expand();
     }
 

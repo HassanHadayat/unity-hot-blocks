@@ -1,8 +1,5 @@
-using JetBrains.Annotations;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -26,8 +23,6 @@ public class Board : MonoBehaviour
         grid = new GridBlock[boardSize.y, boardSize.x];
         gridIndex = new Dictionary<Vector3, Vector2Int>();
 
-        int leftStartPos = (-(boardSize.x / 2));
-        int bottomStartPos = -10;
 
         // Create Grid
         int i = 0;
@@ -123,7 +118,7 @@ public class Board : MonoBehaviour
             {
                 Vector3 tilePosition = item.transform.position;
                 Vector2Int index = gridIndex[tilePosition];
-                int randomStatus = UnityEngine.Random.Range(2, 7);
+                int randomStatus = UnityEngine.Random.Range(3, 7);// concrete - diamond
 
                 for (int j = 0; j < boardSize.x; j++)
                 {
@@ -137,9 +132,9 @@ public class Board : MonoBehaviour
             }
             return isValid;
         }
-        catch (Exception e)
+        catch
         {
-            Debug.Log(e.Message);
+
             return false;
         }
     }
@@ -163,9 +158,8 @@ public class Board : MonoBehaviour
             }
             return isValid;
         }
-        catch (Exception e)
+        catch
         {
-            Debug.Log(e.Message);
             return false;
         }
     }
@@ -176,6 +170,8 @@ public class Board : MonoBehaviour
         {
             if (isValid)
             {
+                AudioManager.instance?.PlaySFX(SfxAudioClip.blockPlacing);
+
                 int preRowCount = CompletedRowCount();
                 // make the upper tile active for next block
                 for (int i = 0; i < piecesList.Count; i++)
@@ -209,9 +205,8 @@ public class Board : MonoBehaviour
             }
             return isValid;
         }
-        catch (Exception e)
+        catch
         {
-            Debug.Log(e.Message);
             return false;
         }
     }
@@ -241,18 +236,22 @@ public class Board : MonoBehaviour
         if (rowsCount == 1)
         {
             newRowMat = GridBlockStatus.concrete;
+            AudioManager.instance?.PlaySFX(SfxAudioClip.rowComplete);
         }
         else if (rowsCount == 2)
         {
             newRowMat = GridBlockStatus.bronze;
+            AudioManager.instance?.PlaySFX(SfxAudioClip.rowCompleteCombo);
         }
         else if (rowsCount == 3)
         {
             newRowMat = GridBlockStatus.obsidian;
+            AudioManager.instance?.PlaySFX(SfxAudioClip.rowCompleteCombo);
         }
         else if (rowsCount == 4)
         {
             newRowMat = GridBlockStatus.diamond;
+            AudioManager.instance?.PlaySFX(SfxAudioClip.rowCompleteCombo);
         }
         else { return; }
 

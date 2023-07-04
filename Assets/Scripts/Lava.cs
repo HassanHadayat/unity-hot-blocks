@@ -8,14 +8,10 @@ public class Lava : MonoBehaviour
     public GameUIManager GameUIManager;
     public Collider2D col;
     public SpriteRenderer spriteRenderer;
+    public Material lavaMat;
+    public Material snowMat;
 
     public float speed = 1f / 90f;      // Speed at which the lava rises
-
-    private float groundSpeed = 1f / 2f;
-    private float concreteSpeed = 1f / 7f;
-    private float bronzeSpeed = 1f / 9f;
-    private float obsidianSpeed = 1f / 11f;
-    private float diamondSpeed = 1f / 13f;
 
     private float groundDelay = 2f;
     private float concreteDelay = 7f;
@@ -25,12 +21,8 @@ public class Lava : MonoBehaviour
 
     private float intensity = 2f;
     private bool isReached = false;
-    private bool isDestroying = false;
-    private int isDestroyingCount = 0;
     private bool isBurning = false;
 
-    public Material lavaMat;
-    public Material snowMat;
     private float freezeLavaTimer;
     private bool isFreezeLava = false;
     private bool isGameEnd = false;
@@ -94,18 +86,18 @@ public class Lava : MonoBehaviour
             }
             else
             {
-                // Check Game End Condition
                 intensity = groundDelay;
 
+                // Check Game End Condition
                 if (!board.AnyActiveBlockRem())
                 {
                     isGameEnd = true;
                     Invoke("DelayGameEnd", 1.5f);
+                    return;
                 }
             }
 
-            StartCoroutine(DestroyGridBlock());
-
+            StartCoroutine(DestroyGridRow());
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
@@ -123,18 +115,22 @@ public class Lava : MonoBehaviour
         }
     }
 
-    IEnumerator DestroyGridBlock()
+    IEnumerator DestroyGridRow()
     {
         float tempIntensity = intensity;
         yield return new WaitForSeconds(tempIntensity / 2f);
         yield return new WaitUntil(() => !isFreezeLava);
+
+        AudioManager.instance?.PlaySFX(SfxAudioClip.blockCracking);
         board.BrokeRow(0);
 
         yield return new WaitForSeconds(tempIntensity / 2);
         yield return new WaitUntil(() => !isFreezeLava);
+        AudioManager.instance?.PlaySFX(SfxAudioClip.blockBreaking);
         board.DestroyRow(0);
 
         yield return new WaitForSeconds(0.2f);
+
         // Move All the Blocks Downward
         board.MoveRowsDownward();
         isBurning = false;
