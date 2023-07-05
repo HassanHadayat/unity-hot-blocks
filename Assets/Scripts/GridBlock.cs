@@ -25,7 +25,6 @@ public class GridBlock : MonoBehaviour
 
         setStatus(GridBlockStatus.empty);
     }
-
     public void setStatus(GridBlockStatus newStatus)
     {
         status = newStatus;

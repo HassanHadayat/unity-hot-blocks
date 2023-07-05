@@ -57,11 +57,11 @@ public class BubbleTetromino : Bubble
             }
             else
             {
-                // Normal size
-                for (int i = 0; i < itemsList.Count; i++)
-                {
-                    itemsList[i].transform.localScale = Vector3.one;
-                }
+                //// Normal size
+                //for (int i = 0; i < itemsList.Count; i++)
+                //{
+                //    itemsList[i].transform.localScale = Vector3.one;
+                //}
 
                 Shrink();
 

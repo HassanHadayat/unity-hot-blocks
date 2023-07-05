@@ -10,8 +10,9 @@ public class Lava : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public Material lavaMat;
     public Material snowMat;
+    public Vector3 lavaEndPos = new Vector3(0f, 0.5f, 0f);
 
-    public float speed = 1f / 90f;      // Speed at which the lava rises
+    public float speed = 1f / 150f;      // Speed at which the lava rises
 
     private float groundDelay = 2f;
     private float concreteDelay = 7f;
@@ -46,7 +47,13 @@ public class Lava : MonoBehaviour
             if (!isReached)
                 transform.Translate(Vector3.up * speed * Time.deltaTime);
             else if (isGameEnd)
-                transform.Translate(Vector3.up * 15f * Time.deltaTime);
+            {
+                if (transform.position.y < lavaEndPos.y)
+                    transform.Translate(Vector3.up * 15f * Time.deltaTime);
+                else
+                    transform.position = lavaEndPos;
+
+            }
             else
                 Burn();
         }

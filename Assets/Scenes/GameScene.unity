@@ -4533,6 +4533,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 2070358909}
   lavaMat: {fileID: 2100000, guid: 961dede77b6f404438a22dca3e99f708, type: 2}
   snowMat: {fileID: 2100000, guid: 1c59b88eb29790c4e81d199cf5695d52, type: 2}
+  lavaEndPos: {x: 0, y: 0.5, z: 0}
   speed: 0.033333335
 --- !u!61 &2070358912
 BoxCollider2D:

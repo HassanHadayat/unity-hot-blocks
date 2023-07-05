@@ -6,10 +6,9 @@ public class BubbleManager : MonoBehaviour
 
     public GameObject bubbleTetrominoPrefab;
     public GameObject bubblePowerupPrefab;
-    public List<GameObject> bubbles;
     public TetrominoData[] tetrominoes;
     public PowerupData[] powerups;
-
+    public float powerupSpawnTimer = 20f;
     public Vector3 spawnPosition = new Vector3(-4.5f, 15f, 0f);
 
     private void Awake()
@@ -27,8 +26,22 @@ public class BubbleManager : MonoBehaviour
 
     private void Start()
     {
-        InvokeRepeating("SpawnBubbleTetromino", 0f, 4f);
-        InvokeRepeating("SpawnBubblePowerup", 20f, 20f);
+        InvokeRepeating("SpawnBubble", 0f, 3f);
+    }
+    private void SpawnBubble()
+    {
+        powerupSpawnTimer -= 3f;
+        if(powerupSpawnTimer <= 0f)
+        {
+            // Spawn Bubble Powerup
+            SpawnBubblePowerup();
+            powerupSpawnTimer = 20f;
+        }
+        else
+        {
+            // Spawn Bubble Tetromino
+            SpawnBubbleTetromino();
+        }
     }
     private void SpawnBubbleTetromino()
     {
@@ -41,12 +54,13 @@ public class BubbleManager : MonoBehaviour
         GameObject newBubble = Instantiate(bubbleTetrominoPrefab, spawnPos, Quaternion.identity, this.transform);
 
         newBubble.GetComponent<BubbleTetromino>().Initialize(GetComponent<Board>(), spawnPos, data);
-        bubbles.Add(newBubble);
+        
     }
 
 
     private void SpawnBubblePowerup()
     {
+        Debug.Log("Spawn Poerup");
         float randomValue = Random.Range(-3.5f, 4.5f) - 0.5f;
         spawnPosition.x = randomValue;
 
@@ -56,6 +70,6 @@ public class BubbleManager : MonoBehaviour
         GameObject newBubble = Instantiate(bubblePowerupPrefab, spawnPos, Quaternion.identity, this.transform);
 
         newBubble.GetComponent<BubblePowerup>().Initialize(GetComponent<Board>(), spawnPos, data);
-        bubbles.Add(newBubble);
+
     }
 }

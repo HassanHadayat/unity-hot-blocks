@@ -19,6 +19,7 @@ public class GameUIManager : MonoBehaviour
     public GameObject scoreTargetPos;
     public GameObject pauseBtnTargetPos;
 
+
     private void Start()
     {
         // Move the RectTransform to the target position with an ease-inbounce effect
@@ -32,7 +33,7 @@ public class GameUIManager : MonoBehaviour
         restartBtn.SetActive(false);
         score.SetActive(false);
         pauseBtn.SetActive(false);
-        Time.timeScale = 0f;
+        //Time.timeScale = 0f;
         gameEndPanel.SetActive(true);
         gameEndHighestScoreText.text = (PlayerPrefs.GetInt("HighestScore", 0)).ToString();
         gameEndYourScoreText.text = scoreText.text;

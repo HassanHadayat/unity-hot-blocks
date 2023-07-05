@@ -30,7 +30,10 @@ public abstract class Bubble : MonoBehaviour
     private void Update()
     {
         if (isFalling && isActive)
-            Fall(new Vector3(0f, -Time.deltaTime, 0f));
+        {
+            Fall(new Vector3(0f, -Time.deltaTime*2.5f, 0f));
+
+        }
     }
 
     private void Fall(Vector3 translation)
@@ -98,7 +101,6 @@ public abstract class Bubble : MonoBehaviour
             transform.position = newPosition;
         }
     }
-
     public abstract void Shrink();
     public abstract void Expand();
 }

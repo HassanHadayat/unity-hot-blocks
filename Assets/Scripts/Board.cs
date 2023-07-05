@@ -173,16 +173,19 @@ public class Board : MonoBehaviour
                 AudioManager.instance?.PlaySFX(SfxAudioClip.blockPlacing);
 
                 int preRowCount = CompletedRowCount();
+                
                 // make the upper tile active for next block
                 for (int i = 0; i < piecesList.Count; i++)
                 {
                     Vector3 tilePosition = piecesList[i].transform.position;
-                    tilePosition.y += 1f;
-                    Vector2Int index = gridIndex[tilePosition];
-                    if (grid[index.x, index.y].status == GridBlockStatus.empty)
-                        grid[index.x, index.y].setStatus(GridBlockStatus.activeEmpty);
+                    if (gridIndex[tilePosition].x < boardSize.y - 1)
+                    {
+                        tilePosition.y += 1f;
+                        Vector2Int index = gridIndex[tilePosition];
+                        if (grid[index.x, index.y].status == GridBlockStatus.empty)
+                            grid[index.x, index.y].setStatus(GridBlockStatus.activeEmpty);
+                    }
                 }
-
                 // placed the new piece sprites
                 for (int i = 0; i < piecesList.Count; i++)
                 {
@@ -205,8 +208,9 @@ public class Board : MonoBehaviour
             }
             return isValid;
         }
-        catch
+        catch (System.Exception e)
         {
+            Debug.Log(e);
             return false;
         }
     }
